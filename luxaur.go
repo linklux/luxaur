@@ -8,20 +8,53 @@ import (
 	"github.com/mgutz/ansi"
 )
 
+// TODO Automated validation for commands.
 type Command interface {
 	execute(args []string)
 }
 
 type UsageCommand struct{}
+type FindCommand struct{}
 type SearchCommand struct{}
+
+func errorOutput(err string) {
+	fmt.Println(ansi.Color(err, "red"))
+}
 
 func (c UsageCommand) execute(args []string) {
 	fmt.Println("Running usage")
 }
 
-func (c SearchCommand) execute(args []string) {
+func (c FindCommand) execute(args []string) {
+	if len(args) == 0 {
+		errorOutput("Find command requires an argument")
+		return
+	}
+
 	client := http_client.AurClient{}
-	packages := client.Search("spotify")
+	count, pkg := client.Find(args[0])
+
+	if count == 0 {
+		errorOutput(fmt.Sprintf("No package found for '%s'", args[0]))
+		return
+	}
+
+	fmt.Println(pkg)
+}
+
+func (c SearchCommand) execute(args []string) {
+	if len(args) == 0 {
+		errorOutput("Find command requires an argument")
+		return
+	}
+
+	client := http_client.AurClient{}
+	count, packages := client.Search(args[0])
+
+	if count == 0 {
+		errorOutput(fmt.Sprintf("No packages found for '%s'", args[0]))
+		return
+	}
 
 	for _, element := range packages {
 		fmt.Println(element)
@@ -30,6 +63,7 @@ func (c SearchCommand) execute(args []string) {
 
 var commands = map[string]Command{
 	"":       &UsageCommand{},
+	"find":   &FindCommand{},
 	"search": &SearchCommand{},
 }
 
@@ -41,7 +75,7 @@ func main() {
 		if _, ok := commands[args[0]]; ok {
 			command = args[0]
 		} else {
-			fmt.Println(ansi.Color(fmt.Sprintf("Command '%s' is not supported\n", args[0]), "red"))
+			errorOutput(fmt.Sprintf("Command '%s' is not supported\n", args[0]))
 		}
 	}
 

@@ -26,26 +26,26 @@ type AurClient struct {
 	options  []string
 }
 
-func (a AurClient) Search(query string) []data.Package {
+func (a AurClient) Search(query string) (int, []data.Package) {
 	response := request("?type=search&arg=" + query)
 
 	res := aurSearchResponse{}
 	if err := json.Unmarshal(response, &res); err != nil {
-		panic(err)
+		return 0, []data.Package{}
 	}
 
-	return res.Packages
+	return res.ResultCount, res.Packages
 }
 
-func (a AurClient) Find(query string) data.Package {
+func (a AurClient) Find(query string) (int, data.Package) {
 	response := request("?type=info&arg=" + query)
 
 	res := aurFindResponse{}
 	if err := json.Unmarshal(response, &res); err != nil {
-		panic(err)
+		return 0, data.Package{}
 	}
 
-	return res.Package
+	return res.ResultCount, res.Package
 }
 
 func request(endpoint string) []byte {
