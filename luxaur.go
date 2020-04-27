@@ -4,67 +4,21 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/linklux/luxaur/http_client"
+	"github.com/linklux/luxaur/command"
 	"github.com/mgutz/ansi"
 )
 
-// TODO Automated validation for commands.
-type Command interface {
-	execute(args []string)
-}
-
-type UsageCommand struct{}
-type FindCommand struct{}
-type SearchCommand struct{}
-
-func errorOutput(err string) {
+func printError(err string) {
 	fmt.Println(ansi.Color(err, "red"))
 }
 
-func (c UsageCommand) execute(args []string) {
-	fmt.Println("Running usage")
+var commands = map[string]command.ICommand{
+	"find":   command.NewFindCommand(),
+	"search": command.NewSearchCommand(),
 }
 
-func (c FindCommand) execute(args []string) {
-	if len(args) == 0 {
-		errorOutput("Find command requires an argument")
-		return
-	}
-
-	client := http_client.AurClient{}
-	count, pkg := client.Find(args[0])
-
-	if count == 0 {
-		errorOutput(fmt.Sprintf("No package found for '%s'", args[0]))
-		return
-	}
-
-	fmt.Println(pkg)
-}
-
-func (c SearchCommand) execute(args []string) {
-	if len(args) == 0 {
-		errorOutput("Find command requires an argument")
-		return
-	}
-
-	client := http_client.AurClient{}
-	count, packages := client.Search(args[0])
-
-	if count == 0 {
-		errorOutput(fmt.Sprintf("No packages found for '%s'", args[0]))
-		return
-	}
-
-	for _, element := range packages {
-		fmt.Println(element)
-	}
-}
-
-var commands = map[string]Command{
-	"":       &UsageCommand{},
-	"find":   &FindCommand{},
-	"search": &SearchCommand{},
+func printUsage() {
+	fmt.Println("Printing usage")
 }
 
 func main() {
@@ -75,7 +29,7 @@ func main() {
 		if _, ok := commands[args[0]]; ok {
 			command = args[0]
 		} else {
-			errorOutput(fmt.Sprintf("Command '%s' is not supported\n", args[0]))
+			printError(fmt.Sprintf("Command '%s' is not supported\n", args[0]))
 		}
 	}
 
@@ -84,5 +38,8 @@ func main() {
 		commandArgs = args[1:]
 	}
 
-	commands[command].execute(commandArgs)
+	// Try to parse command flags for the given command. Will terminate program
+	// execution and print usage for the given command when an error occures.
+	commands[command].ParseFlags(args[2:])
+	commands[command].Execute(commandArgs)
 }
