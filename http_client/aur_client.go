@@ -9,7 +9,7 @@ import (
 	"github.com/linklux/luxaur/data"
 )
 
-const BASE_API_URL = "https://aur.archlinux.org/rpc/"
+const BASE_API_URL = "https://aur.archlinux.org/rpc/v=5"
 
 type aurFindResponse struct {
 	ResultCount int          `json:"resultcount"`
@@ -27,7 +27,7 @@ type AurClient struct {
 }
 
 func (a AurClient) Search(query string) (int, []data.Package) {
-	response := request("?type=search&arg=" + query)
+	response := request("&type=search&arg=" + query)
 
 	res := aurSearchResponse{}
 	if err := json.Unmarshal(response, &res); err != nil {
@@ -37,8 +37,9 @@ func (a AurClient) Search(query string) (int, []data.Package) {
 	return res.ResultCount, res.Packages
 }
 
+// TODO Support the AUR multinfo feature.
 func (a AurClient) Find(query string) (int, data.Package) {
-	response := request("?type=info&arg=" + query)
+	response := request("&type=info&arg=" + query)
 
 	res := aurFindResponse{}
 	if err := json.Unmarshal(response, &res); err != nil {
