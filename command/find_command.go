@@ -24,10 +24,12 @@ func (c *FindCommand) ParseFlags(args []string) {
 
 func (c *FindCommand) Execute(args []string) bool {
 	if len(args) == 0 {
-		c.printError("Find command requires an argument")
+		c.printError("Package find/info requires an argument")
+		c.PrintUsage()
 		return false
 	}
 
+	// TODO Support RPC's multiinfo feature.
 	client := http_client.AurClient{}
 	count, pkg := client.Find(args[0])
 
@@ -41,5 +43,9 @@ func (c *FindCommand) Execute(args []string) bool {
 }
 
 func (c *FindCommand) PrintUsage() {
-	c.printUsage(c.flags)
+	c.printUsage(c.GetDescription(), c.flags)
+}
+
+func (c *FindCommand) GetDescription() string {
+	return "Search the AUR to find a package that is an exact match with the given name"
 }

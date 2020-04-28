@@ -18,7 +18,17 @@ var commands = map[string]command.ICommand{
 }
 
 func printUsage() {
-	fmt.Println("Printing usage")
+	fmt.Printf("%s\n%s\n\n",
+		"A simple lightweight AUR tool that makes searching, installing and managing installed packages easier.",
+		"Usage: luxaur [command] <arguments> <flags>",
+	)
+
+	fmt.Println("Available commands:")
+	for name, element := range commands {
+		fmt.Printf("%s\t%s\n", name, element.GetDescription())
+	}
+
+	fmt.Println("\nFor detailed usage of a command, use: luxaur [command] -h|--help")
 }
 
 func main() {
@@ -30,6 +40,8 @@ func main() {
 			command = args[0]
 		} else {
 			printError(fmt.Sprintf("Command '%s' is not supported\n", args[0]))
+			printUsage()
+			return
 		}
 	} else {
 		printUsage()
@@ -39,6 +51,11 @@ func main() {
 	commandArgs := []string{}
 	if len(args) > 1 {
 		commandArgs = args[1:]
+
+		if commandArgs[0] == "-h" || commandArgs[0] == "--help" {
+			commands[command].PrintUsage()
+			return
+		}
 	}
 
 	commandFlags := []string{}
@@ -46,6 +63,7 @@ func main() {
 		commandFlags = args[2:]
 	}
 
+	// TODO Allow multiple arguments per command where desired.
 	// Try to parse command flags for the given command. Will terminate program
 	// execution and print usage for the given command when an error occures.
 	commands[command].ParseFlags(commandFlags)

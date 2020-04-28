@@ -3,6 +3,7 @@ package command
 import (
 	"flag"
 	"fmt"
+	"sort"
 
 	"github.com/mgutz/ansi"
 )
@@ -12,6 +13,7 @@ type ICommand interface {
 	Execute(args []string) bool
 
 	PrintUsage()
+	GetDescription() string
 }
 
 type commandFlag struct {
@@ -27,7 +29,8 @@ type commandUtil struct{}
 func (c *commandUtil) parseFlags(args []string, flags map[string]*commandFlag) {
 	fs := flag.NewFlagSet("search", flag.ExitOnError)
 	fs.Usage = func() {
-		c.printUsage(flags)
+		c.printError("Invalid flag given, the following flags are allowed:")
+		c.printUsage("", flags)
 	}
 
 	// TODO There must be a better way to do this...
@@ -69,7 +72,6 @@ func (c *commandUtil) parseFlags(args []string, flags map[string]*commandFlag) {
 
 				fs.StringVar(strings[key], element.Name, defaultValue, element.Description)
 			}
-
 		}
 	}
 
@@ -88,8 +90,26 @@ func (c *commandUtil) parseFlags(args []string, flags map[string]*commandFlag) {
 	}
 }
 
-func (c *commandUtil) printUsage(flags map[string]*commandFlag) {
-	fmt.Println("TODO!")
+func (c *commandUtil) printUsage(desc string, flags map[string]*commandFlag) {
+	fmt.Println(desc)
+	fmt.Println("\nAllowed flags:")
+
+	// The order is different from time to time when printing, sort it first
+	keys := make([]string, 0)
+	for k, _ := range flags {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+	for _, k := range keys {
+		fmt.Printf("    -%s|--%s <%s> (default: %s) %s\n",
+			flags[k].Shortname,
+			flags[k].Name,
+			flags[k].Datatype,
+			fmt.Sprint(flags[k].Value),
+			flags[k].Description,
+		)
+	}
 }
 
 func (c *commandUtil) printError(err string) {

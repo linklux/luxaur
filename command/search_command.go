@@ -25,12 +25,9 @@ func (c *SearchCommand) ParseFlags(args []string) {
 }
 
 func (c *SearchCommand) Execute(args []string) bool {
-	for _, element := range c.flags {
-		fmt.Println(element)
-	}
-
 	if len(args) == 0 {
-		c.printError("Find command requires an argument")
+		c.printError("Package search requires an argument")
+		c.PrintUsage()
 		return false
 	}
 
@@ -55,5 +52,9 @@ func (c *SearchCommand) Execute(args []string) bool {
 }
 
 func (c *SearchCommand) PrintUsage() {
-	c.printUsage(c.flags)
+	c.printUsage(c.GetDescription(), c.flags)
+}
+
+func (c *SearchCommand) GetDescription() string {
+	return "Search the AUR for packages that match the given name fully or partially"
 }
