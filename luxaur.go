@@ -31,6 +31,9 @@ func main() {
 		} else {
 			printError(fmt.Sprintf("Command '%s' is not supported\n", args[0]))
 		}
+	} else {
+		printUsage()
+		return
 	}
 
 	commandArgs := []string{}
@@ -38,8 +41,13 @@ func main() {
 		commandArgs = args[1:]
 	}
 
+	commandFlags := []string{}
+	if len(args) > 2 {
+		commandFlags = args[2:]
+	}
+
 	// Try to parse command flags for the given command. Will terminate program
 	// execution and print usage for the given command when an error occures.
-	commands[command].ParseFlags(args[2:])
+	commands[command].ParseFlags(commandFlags)
 	commands[command].Execute(commandArgs)
 }
