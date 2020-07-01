@@ -9,7 +9,8 @@ import (
 	"github.com/linklux/luxaur/data"
 )
 
-const BASE_API_URL = "https://aur.archlinux.org/rpc/v=5"
+const RPC_API_URL = "https://aur.archlinux.org/rpc/v=5"
+const CGIT_API_URL = "https://aur.archlinux.org"
 
 type aurFindResponse struct {
 	ResultCount int          `json:"resultcount"`
@@ -51,7 +52,7 @@ func (a AurClient) Find(query string) (int, data.Package) {
 
 func request(endpoint string) []byte {
 	client := http.Client{Timeout: time.Second * 5}
-	url := BASE_API_URL + endpoint
+	url := RPC_API_URL + endpoint
 
 	req, reqErr := http.NewRequest(http.MethodGet, url, nil)
 	if reqErr != nil {
