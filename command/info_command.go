@@ -6,46 +6,49 @@ import (
 	"github.com/linklux/luxaur/http_client"
 )
 
-type FindCommand struct {
+type InfoCommand struct {
 	*commandUtil
 
 	flags map[string]*commandFlag
 }
 
-func NewFindCommand() *FindCommand {
+func NewInfoCommand() *InfoCommand {
 	flags := map[string]*commandFlag{}
 
-	return &FindCommand{&commandUtil{}, flags}
+	return &InfoCommand{&commandUtil{}, flags}
 }
 
-func (c *FindCommand) ParseFlags(args []string) {
+func (c *InfoCommand) ParseFlags(args []string) {
 	c.parseFlags(args, c.flags)
 }
 
-func (c *FindCommand) Execute(args []string) bool {
+func (c *InfoCommand) Execute(args []string) bool {
 	if len(args) == 0 {
-		c.printError("Package find/info requires an argument")
+		c.printError("Package info requires an argument")
 		c.PrintUsage()
 		return false
 	}
 
 	// TODO Support RPC's multiinfo feature.
 	client := http_client.AurClient{}
-	count, pkg := client.Find(args[0])
+	count, packages := client.Find(args)
 
 	if count == 0 {
-		c.printError(fmt.Sprintf("No package found for '%s'", args[0]))
+		c.printError(fmt.Sprintf("No package(s) found for '%v'", args))
 		return false
 	}
 
-	fmt.Println(pkg)
+	for _, element := range packages {
+		fmt.Println(element)
+	}
+
 	return true
 }
 
-func (c *FindCommand) PrintUsage() {
+func (c *InfoCommand) PrintUsage() {
 	c.printUsage(c.GetDescription(), c.flags)
 }
 
-func (c *FindCommand) GetDescription() string {
+func (c *InfoCommand) GetDescription() string {
 	return "Search the AUR to find a package that is an exact match with the given name"
 }

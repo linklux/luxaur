@@ -9,17 +9,17 @@ import (
 	"github.com/linklux/luxaur/data"
 )
 
-const RPC_API_URL = "https://aur.archlinux.org/rpc/v=5"
+const RPC_API_URL = "https://aur.archlinux.org/rpc/?v=5"
 const CGIT_API_URL = "https://aur.archlinux.org"
 
-type aurFindResponse struct {
-	ResultCount int          `json:"resultcount"`
-	Package     data.Package `json:"results"`
+type aurInfoResponse struct {
+	ResultCount int                   `json:"resultcount"`
+	Packages    []data.AurPackageInfo `json:"results"`
 }
 
 type aurSearchResponse struct {
-	ResultCount int            `json:"resultcount"`
-	Packages    []data.Package `json:"results"`
+	ResultCount int                     `json:"resultcount"`
+	Packages    []data.AurPackageSearch `json:"results"`
 }
 
 type AurClient struct {
@@ -27,27 +27,31 @@ type AurClient struct {
 	options  []string
 }
 
-func (a AurClient) Search(query string) (int, []data.Package) {
+func (a AurClient) Search(query string) (int, []data.AurPackageSearch) {
 	response := request("&type=search&arg=" + query)
 
 	res := aurSearchResponse{}
 	if err := json.Unmarshal(response, &res); err != nil {
-		return 0, []data.Package{}
+		return 0, []data.AurPackageSearch{}
 	}
 
 	return res.ResultCount, res.Packages
 }
 
-// TODO Support the AUR multinfo feature.
-func (a AurClient) Find(query string) (int, data.Package) {
-	response := request("&type=info&arg=" + query)
-
-	res := aurFindResponse{}
-	if err := json.Unmarshal(response, &res); err != nil {
-		return 0, data.Package{}
+func (a AurClient) Find(query []string) (int, []data.AurPackageInfo) {
+	args := ""
+	for _, arg := range query {
+		args += "&arg[]=" + arg
 	}
 
-	return res.ResultCount, res.Package
+	response := request("&type=info" + args)
+
+	res := aurInfoResponse{}
+	if err := json.Unmarshal(response, &res); err != nil {
+		return 0, []data.AurPackageInfo{}
+	}
+
+	return res.ResultCount, res.Packages
 }
 
 func request(endpoint string) []byte {

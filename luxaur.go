@@ -13,7 +13,7 @@ func printError(err string) {
 }
 
 var commands = map[string]command.ICommand{
-	"find":   command.NewFindCommand(),
+	"info":   command.NewInfoCommand(),
 	"search": command.NewSearchCommand(),
 }
 

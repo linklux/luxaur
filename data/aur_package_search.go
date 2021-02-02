@@ -1,22 +1,21 @@
 package data
 
 import (
-  "fmt"
-  "time"
+	"fmt"
+	"time"
 
 	"github.com/mgutz/ansi"
 )
 
-type Package struct {
- Id          int    `json:"ID"`
- Name        string `json:"Name"`
- Description string `json:"Description"`
- Version     string `json:"Version"`
- Path        string `json:"URLPath"`
- Outdated    int64  `json:"OutOfDate"`
+type AurPackageSearch struct {
+	Id          int    `json:"ID"`
+	Name        string `json:"Name"`
+	Description string `json:"Description"`
+	Version     string `json:"Version"`
+	Outdated    int64  `json:"OutOfDate"`
 }
 
-func (p Package) String() string {
+func (p AurPackageSearch) String() string {
 	outdatedStr := ""
 
 	if p.Outdated != 0 {
