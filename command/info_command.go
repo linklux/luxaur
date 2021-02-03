@@ -19,7 +19,7 @@ func NewInfoCommand() *InfoCommand {
 }
 
 func (c *InfoCommand) ParseFlags(args []string) {
-	c.parseFlags(args, c.flags)
+	c.parseFlags("info", args, c.flags)
 }
 
 func (c *InfoCommand) Execute(args []string) bool {
@@ -29,7 +29,6 @@ func (c *InfoCommand) Execute(args []string) bool {
 		return false
 	}
 
-	// TODO Support RPC's multiinfo feature.
 	client := http_client.AurClient{}
 	count, packages := client.Find(args)
 

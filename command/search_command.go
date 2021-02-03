@@ -21,7 +21,7 @@ func NewSearchCommand() *SearchCommand {
 }
 
 func (c *SearchCommand) ParseFlags(args []string) {
-	c.commandUtil.parseFlags(args, c.flags)
+	c.commandUtil.parseFlags("search", args, c.flags)
 }
 
 func (c *SearchCommand) Execute(args []string) bool {

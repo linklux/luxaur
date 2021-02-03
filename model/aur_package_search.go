@@ -1,4 +1,4 @@
-package data
+package model
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ func (p AurPackageSearch) String() string {
 		outdatedStr = fmt.Sprintf("%s", "(Outdated as of "+date+")")
 	}
 
-	return fmt.Sprintf("%s %s %s\n    %s",
+	return fmt.Sprintf("%s %s %s\n  %s",
 		fmt.Sprintf("%s", ansi.Color(p.Name, "blue+b")),
 		fmt.Sprintf("%s", ansi.Color(p.Version, "green+b")),
 		fmt.Sprintf("%s", ansi.Color(outdatedStr, "red+b")),

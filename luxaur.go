@@ -13,8 +13,10 @@ func printError(err string) {
 }
 
 var commands = map[string]command.ICommand{
-	"info":   command.NewInfoCommand(),
-	"search": command.NewSearchCommand(),
+	"list":    command.NewListCommand(),
+	"info":    command.NewInfoCommand(),
+	"search":  command.NewSearchCommand(),
+	"install": command.NewInstallCommand(),
 }
 
 func printUsage() {

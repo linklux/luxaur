@@ -26,8 +26,8 @@ type commandFlag struct {
 
 type commandUtil struct{}
 
-func (c *commandUtil) parseFlags(args []string, flags map[string]*commandFlag) {
-	fs := flag.NewFlagSet("search", flag.ExitOnError)
+func (c *commandUtil) parseFlags(setName string, args []string, flags map[string]*commandFlag) {
+	fs := flag.NewFlagSet(setName, flag.ExitOnError)
 	fs.Usage = func() {
 		c.printError("Invalid flag given, the following flags are allowed:")
 		c.printUsage("", flags)
