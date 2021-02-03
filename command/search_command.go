@@ -3,7 +3,7 @@ package command
 import (
 	"fmt"
 
-	"github.com/linklux/luxaur/http_client"
+	"github.com/linklux/luxaur/aur_util"
 )
 
 type SearchCommand struct {
@@ -31,8 +31,7 @@ func (c *SearchCommand) Execute(args []string) bool {
 		return false
 	}
 
-	client := http_client.AurClient{}
-	count, packages := client.Search(args[0])
+	count, packages := aur_util.Search(args[0])
 
 	if count == 0 {
 		c.printError(fmt.Sprintf("No packages found for '%s'", args[0]))

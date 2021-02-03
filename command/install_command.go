@@ -7,7 +7,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/linklux/luxaur/http_client"
+	"github.com/linklux/luxaur/aur_util"
 	"github.com/linklux/luxaur/io_util"
 	"github.com/linklux/luxaur/model"
 	"github.com/linklux/luxaur/repository"
@@ -38,8 +38,7 @@ func (c *InstallCommand) Execute(args []string) bool {
 		return false
 	}
 
-	client := http_client.AurClient{}
-	count, packages := client.Find(args)
+	count, packages := aur_util.Find(args)
 
 	if count == 0 {
 		c.printError(fmt.Sprintf("No package(s) found for '%v'", args))
@@ -55,7 +54,7 @@ func (c *InstallCommand) Execute(args []string) bool {
 
 // TODO Relocate to reuse for updating packages (composited?)
 func (c *InstallCommand) install(pkg *model.AurPackageInfo) {
-	file, err := http_client.Download(pkg)
+	file, err := aur_util.Download(pkg.Url, pkg.Name, pkg.Version)
 	if err != nil {
 		c.printError(fmt.Sprintf("Failed to download package for '%s': %s", pkg.Name, err.Error()))
 		return

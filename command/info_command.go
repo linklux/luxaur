@@ -3,7 +3,7 @@ package command
 import (
 	"fmt"
 
-	"github.com/linklux/luxaur/http_client"
+	"github.com/linklux/luxaur/aur_util"
 )
 
 type InfoCommand struct {
@@ -29,8 +29,7 @@ func (c *InfoCommand) Execute(args []string) bool {
 		return false
 	}
 
-	client := http_client.AurClient{}
-	count, packages := client.Find(args)
+	count, packages := aur_util.Find(args)
 
 	if count == 0 {
 		c.printError(fmt.Sprintf("No package(s) found for '%v'", args))
